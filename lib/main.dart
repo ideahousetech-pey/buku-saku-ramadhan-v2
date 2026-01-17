@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
-import 'pages/home_page.dart';
-import 'pages/login_siswa_page.dart';
 
-void main() {
+import 'pages/home_page.dart';
+import 'utils/timezone_helper.dart';
+import 'services/adzan_notification_service.dart';
+import 'services/daily_update_service.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await TimezoneHelper.init();
+  await AdzanNotificationService.init();
+  await DailyUpdateService.refreshIfNeeded();
+
   runApp(const MyApp());
 }
 
@@ -12,15 +21,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Buku Saku Ramadhan',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-      ),
-      routes: {
-        '/': (context) => const HomePage(),
-        '/login-siswa': (context) => const LoginSiswaPage(),
-      },
+      title: 'Buku Saku Ramadhan',
+      home: const HomePage(),
     );
   }
 }

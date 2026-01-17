@@ -28,7 +28,7 @@ class _StarPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = Colors.white.withOpacity(0.8);
+    final paint = Paint()..color = Colors.white.withValues(alpha: 77);
     for (int i = 0; i < 60; i++) {
       final dx = random.nextDouble() * size.width;
       final dy = random.nextDouble() * size.height * 0.6;
