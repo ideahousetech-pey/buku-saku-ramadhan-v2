@@ -11,7 +11,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool _loading = true;
-  String _city = 'Jakarta'; // fallback
+  final String _city = 'Jakarta'; // fallback
   String _timeNow = '-';
 
   @override

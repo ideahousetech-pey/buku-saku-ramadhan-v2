@@ -39,7 +39,7 @@ class _RekapGuruPageState extends State<RekapGuruPage> {
           Padding(
             padding: const EdgeInsets.all(12),
             child: DropdownButtonFormField<String>(
-              value: _kelas,
+              initialValue: _kelas,
               items: List.generate(6, (i) {
                 final k = '${i + 1}';
                 return DropdownMenuItem(
@@ -48,7 +48,10 @@ class _RekapGuruPageState extends State<RekapGuruPage> {
                 );
               }),
               onChanged: (v) {
-                _kelas = v!;
+                if (v == null) return;
+                setState(() {
+                  _kelas = v;
+                });
                 _loadRekap();
               },
               decoration: const InputDecoration(

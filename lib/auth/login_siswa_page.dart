@@ -78,7 +78,7 @@ class _LoginPageSiswaState extends State<LoginPageSiswa> {
 
             // PILIH KELAS
             DropdownButtonFormField<String>(
-              value: _kelas,
+              initialValue: _kelas,
               decoration: const InputDecoration(
                 labelText: 'Kelas',
                 border: OutlineInputBorder(),
@@ -91,8 +91,9 @@ class _LoginPageSiswaState extends State<LoginPageSiswa> {
                 );
               }),
               onChanged: (value) {
+                if (value == null) return;
                 setState(() {
-                  _kelas = value ?? '1';
+                  _kelas = value;
                 });
               },
             ),
