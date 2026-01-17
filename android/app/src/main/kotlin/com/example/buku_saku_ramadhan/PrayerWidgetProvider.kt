@@ -1,11 +1,9 @@
-package com.ideahousetech.bukusakuramadhan
+package com.example.buku_saku_ramadhan
 
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.widget.RemoteViews
-import java.text.SimpleDateFormat
-import java.util.*
 
 class PrayerWidgetProvider : AppWidgetProvider() {
 
@@ -14,39 +12,17 @@ class PrayerWidgetProvider : AppWidgetProvider() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray
     ) {
-        for (appWidgetId in appWidgetIds) {
-
+        for (widgetId in appWidgetIds) {
             val views = RemoteViews(
                 context.packageName,
                 R.layout.prayer_widget
             )
 
-            // --- DATA SEMENTARA (AMAN)
-            val city = "Jakarta"
-            val nextPrayer = getNextPrayer()
-            val time = getNextPrayerTime()
+            views.setTextViewText(R.id.tvSubuh, "Subuh 04:35")
+            views.setTextViewText(R.id.tvDzuhur, "Dzuhur 11:58")
+            views.setTextViewText(R.id.tvAshar, "Ashar 15:12")
 
-            views.setTextViewText(R.id.tvCity, city)
-            views.setTextViewText(R.id.tvNextPrayer, nextPrayer)
-            views.setTextViewText(R.id.tvPrayerTime, time)
-
-            appWidgetManager.updateAppWidget(appWidgetId, views)
+            appWidgetManager.updateAppWidget(widgetId, views)
         }
-    }
-
-    private fun getNextPrayer(): String {
-        val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-        return when {
-            hour < 5 -> "Subuh"
-            hour < 12 -> "Dzuhur"
-            hour < 15 -> "Ashar"
-            hour < 18 -> "Maghrib"
-            else -> "Isya"
-        }
-    }
-
-    private fun getNextPrayerTime(): String {
-        val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
-        return formatter.format(Date())
     }
 }

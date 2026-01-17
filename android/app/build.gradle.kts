@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.example.buku_saku_ramadhan"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.buku_saku_ramadhan"
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
