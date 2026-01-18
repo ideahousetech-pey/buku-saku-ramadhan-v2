@@ -100,9 +100,9 @@ class _HomePageState extends State<HomePage>
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(18),
-                        color: Colors.white.withOpacity(0.18),
+                        color: Colors.white.withAlpha((0.18 * 255).round()),
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.25),
+                          color: Colors.white.withAlpha((0.25 * 255).round()),
                         ),
                       ),
                       child: Row(
@@ -188,9 +188,9 @@ class _HomePageState extends State<HomePage>
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: Colors.white.withOpacity(0.18),
+          color: Colors.white.withAlpha((0.18 * 255).round()),
           border: Border.all(
-            color: Colors.white.withOpacity(0.25),
+            color: Colors.white.withAlpha((0.25 * 255).round()),
           ),
         ),
         child: Column(
