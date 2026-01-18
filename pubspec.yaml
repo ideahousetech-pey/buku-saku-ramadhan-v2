@@ -38,6 +38,8 @@ dependencies:
   geolocator: ^11.0.0
   geocoding: ^3.0.0
   home_widget: ^0.6.0
+  adhan_dart: ^1.1.1
+  audioplayers: ^6.5.1
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -70,6 +72,7 @@ flutter:
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
+  #   - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
