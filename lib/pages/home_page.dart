@@ -15,6 +15,7 @@ class _HomePageState extends State<HomePage> {
   late Timer _timer;
   late DateTime _now;
 
+  // ✅ _city sekarang dipakai di UI
   final String _city = 'Jakarta';
 
   final List<Map<String, String>> _prayerTimes = [
@@ -102,8 +103,9 @@ class _HomePageState extends State<HomePage> {
                         ),
                   ),
                   const SizedBox(height: 4),
+                  // ✅ Tampilkan kota
                   Text(
-                    'city',
+                    _city,
                     style: const TextStyle(color: Colors.white70),
                   ),
 
