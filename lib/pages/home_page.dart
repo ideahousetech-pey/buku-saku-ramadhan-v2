@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -10,45 +11,65 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _fade;
+class _HomePageState extends State<HomePage> {
+  late Timer _timer;
+  late DateTime _now;
 
   final String _city = 'Jakarta';
-  late String _timeNow;
+
+  final List<Map<String, String>> _prayerTimes = [
+    {'name': 'Subuh', 'time': '04:36'},
+    {'name': 'Dzuhur', 'time': '12:01'},
+    {'name': 'Ashar', 'time': '15:25'},
+    {'name': 'Maghrib', 'time': '18:07'},
+    {'name': 'Isya', 'time': '19:18'},
+  ];
 
   @override
   void initState() {
     super.initState();
+    _now = DateTime.now();
 
-    _timeNow = DateFormat('HH:mm').format(DateTime.now());
-
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 700),
-    );
-
-    _fade = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOut,
-    );
-
-    _controller.forward();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      setState(() {
+        _now = DateTime.now();
+      });
+    });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _timer.cancel();
     super.dispose();
+  }
+
+  String _currentPrayer() {
+    for (final prayer in _prayerTimes) {
+      final time = DateFormat('HH:mm').parse(prayer['time']!);
+      final prayerTime = DateTime(
+        _now.year,
+        _now.month,
+        _now.day,
+        time.hour,
+        time.minute,
+      );
+
+      if (_now.isBefore(prayerTime)) {
+        return prayer['name']!;
+      }
+    }
+    return 'Isya';
   }
 
   @override
   Widget build(BuildContext context) {
+    final timeString = DateFormat('HH:mm:ss').format(_now);
+    final nextPrayer = _currentPrayer();
+
     return Scaffold(
       body: Stack(
         children: [
-          // 🌙 BACKGROUND GRADIENT RAMADHAN
+          // 🌙 BACKGROUND
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -63,111 +84,127 @@ class _HomePageState extends State<HomePage>
             ),
           ),
 
-          // 🌟 CONTENT
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(20),
-              child: FadeTransition(
-                opacity: _fade,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // 🕌 TITLE
-                    Text(
-                      'Buku Saku Ramadhan',
-                      style:
-                          Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 0.5,
-                              ),
-                    ),
-
-                    const SizedBox(height: 6),
-
-                    Text(
-                      'Kota: $_city',
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 16,
-                      ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // ⏰ TIME CARD
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(18),
-                        color: Colors.white.withAlpha((0.18 * 255).round()),
-                        border: Border.all(
-                          color: Colors.white.withAlpha((0.25 * 255).round()),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // TITLE
+                  Text(
+                    'Buku Saku Ramadhan',
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineSmall
+                        ?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.access_time,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '$_city',
+                    style: const TextStyle(color: Colors.white70),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // ⏰ REALTIME CLOCK
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(18),
+                    decoration: _glass(),
+                    child: Column(
+                      children: [
+                        Text(
+                          timeString,
+                          style: const TextStyle(
+                            fontSize: 36,
+                            fontWeight: FontWeight.bold,
                             color: Colors.white,
-                            size: 28,
+                            letterSpacing: 1.5,
                           ),
-                          const SizedBox(width: 12),
-                          Text(
-                            'Waktu sekarang: $_timeNow',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge
-                                ?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Menuju $nextPrayer',
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 16,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
+                  ),
 
-                    const SizedBox(height: 32),
+                  const SizedBox(height: 24),
 
-                    // 📋 MENU
-                    Expanded(
-                      child: GridView.count(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                        children: [
-                          _menuCard(
-                            icon: Icons.login,
-                            title: 'Login Siswa',
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const LoginPageSiswa(),
-                                ),
-                              );
-                            },
+                  // 🕌 JADWAL SHOLAT
+                  Text(
+                    'Jadwal Sholat',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  Column(
+                    children: _prayerTimes.map((prayer) {
+                      final isNext = prayer['name'] == nextPrayer;
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 14),
+                        decoration: _glass(
+                          highlight: isNext,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              prayer['name']!,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight:
+                                    isNext ? FontWeight.bold : FontWeight.w500,
+                              ),
+                            ),
+                            Text(
+                              prayer['time']!,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight:
+                                    isNext ? FontWeight.bold : FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+
+                  const Spacer(),
+
+                  // LOGIN
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.login),
+                      label: const Text('Login Siswa'),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const LoginPageSiswa(),
                           ),
-                          _menuCard(
-                            icon: Icons.check_circle_outline,
-                            title: 'Checklist Ibadah',
-                            onTap: () {},
-                          ),
-                          _menuCard(
-                            icon: Icons.notifications_active_outlined,
-                            title: 'Adzan',
-                            onTap: () {},
-                          ),
-                          _menuCard(
-                            icon: Icons.school_outlined,
-                            title: 'Rekap Guru',
-                            onTap: () {},
-                          ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -176,39 +213,14 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  // 🧊 CARD MENU (GLASS STYLE)
-  Widget _menuCard({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(20),
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: Colors.white.withAlpha((0.18 * 255).round()),
-          border: Border.all(
-            color: Colors.white.withAlpha((0.25 * 255).round()),
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 42, color: Colors.white),
-            const SizedBox(height: 10),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
+  BoxDecoration _glass({bool highlight = false}) {
+    return BoxDecoration(
+      color: highlight
+          ? Colors.white.withAlpha((0.28 * 255).round())
+          : Colors.white.withAlpha((0.18 * 255).round()),
+      borderRadius: BorderRadius.circular(18),
+      border: Border.all(
+        color: Colors.white.withAlpha((0.25 * 255).round()),
       ),
     );
   }
