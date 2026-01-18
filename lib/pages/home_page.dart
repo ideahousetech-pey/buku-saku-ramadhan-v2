@@ -103,7 +103,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '$_city',
+                    'city',
                     style: const TextStyle(color: Colors.white70),
                   ),
 
